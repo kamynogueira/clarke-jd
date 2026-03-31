@@ -225,10 +225,7 @@ export default function App() {
   const [blocoAtual, setBlocoAtual] = useState(0);
   const [respostas, setRespostas] = useState({});
   const [jdGerado, setJdGerado] = useState(null);
-  const [jsonInput, setJsonInput] = useState("");
-  const [promptParaCopiar, setPromptParaCopiar] = useState("");
   const [loading, setLoading] = useState(false);
-  const [copiado, setCopiado] = useState(false);
 
   const getRespVal = (b, p) => respostas[b]?.[p] || "";
   const handleResp = (b, p, v) => setRespostas(prev => ({ ...prev, [b]: { ...(prev[b] || {}), [p]: v } }));
@@ -236,10 +233,28 @@ export default function App() {
   const pct = Math.round((blocoAtual / BLOCOS.length) * 100);
   const ultimo = blocoAtual === BLOCOS.length - 1;
 
-  const handleEnviarParaRevisao = () => {
+  const handleEnviarParaRevisao = async () => {
+    setLoading(true);
     const prompt = buildPrompt(areaSel, nomeVaga, respostas);
-    setPromptParaCopiar(prompt);
-    setEtapa("aguardando");
+    try {
+      const res = await fetch("/api/generate-jd", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erro desconhecido");
+      const clean = data.text.replace(/```json|```/g, "").trim();
+      const match = clean.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error("JSON não encontrado na resposta");
+      const parsed = JSON.parse(match[0]);
+      setJdGerado(parsed);
+      setEtapa("documento");
+    } catch (e) {
+      alert("Erro ao gerar JD: " + e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleReceberJSON = (texto) => {
@@ -328,7 +343,7 @@ export default function App() {
             <button style={{ ...s.btn, opacity: blocoOk(bloco) ? 1 : 0.4, cursor: blocoOk(bloco) ? "pointer" : "not-allowed" }}
               disabled={!blocoOk(bloco)}
               onClick={ultimo ? handleEnviarParaRevisao : () => setBlocoAtual(b => b + 1)}>
-              {ultimo ? "Finalizar e Revisar" : "Próximo"}
+              {ultimo ? (loading ? "Gerando JD..." : "✨ Finalizar e Gerar JD") : "Próximo"}
             </button>
           </div>
         </div>
