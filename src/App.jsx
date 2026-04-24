@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, BorderStyle } from "docx";
 import { saveAs } from "file-saver";
@@ -45,6 +44,65 @@ CONTEXTO CLARKE ENERGIA 2026:
 - Valores: cliente é prioridade, proatividade, transparência, não fugimos de conversas difíceis
 `;
 
+const BENCHMARKS = {
+  "Comercial": `
+BENCHMARKS DE MERCADO — ÁREA COMERCIAL (energia, SaaS B2B, fintechs):
+- Requisitos mais comuns: experiência em vendas consultivas B2B, domínio de CRM (HubSpot/Salesforce), capacidade de prospecção ativa e gestão de pipeline
+- Diferenciais valorizados: conhecimento em mercado livre de energia, experiência com ciclos de venda longos (3-6 meses), network no setor industrial/varejo
+- Senioridade Pleno: 2-4 anos, metas individuais de receita, autonomia para negociar dentro de parâmetros definidos
+- Senioridade Sênior: 4-7 anos, gestão de contas estratégicas, capacidade de fechar contratos acima de R$500k/ano
+- Erros comuns em JDs: requisitos genéricos demais ("boa comunicação"), não especificar ticket médio esperado, não deixar claro se é hunter ou farmer
+- Tendência de mercado: vagas comerciais em energia estão exigindo cada vez mais letramento em dados e capacidade de apresentar análises de economia ao cliente
+`,
+  "Gestão de Clientes": `
+BENCHMARKS DE MERCADO — GESTÃO DE CLIENTES / CS (energia, SaaS B2B):
+- Requisitos mais comuns: experiência em CS ou Account Management B2B, capacidade analítica para leitura de dados de consumo, comunicação clara e empática
+- Diferenciais valorizados: experiência com churn prevention, domínio de ferramentas de CS (Gainsight, Totango), background em energia ou utilities
+- Senioridade Pleno: 2-4 anos, carteira de 40-80 clientes, foco em retenção e expansão de receita
+- Senioridade Sênior: 4-7 anos, gestão de contas VIP/enterprise, capacidade de conduzir QBRs e negociações de renovação
+- Métricas típicas: NPS, churn rate, Net Revenue Retention (NRR), tempo médio de resposta
+- Erros comuns em JDs: confundir CS com suporte técnico, não deixar claro o tamanho da carteira, não especificar se há meta de expansão (upsell/cross-sell)
+- Tendência: mercado valoriza perfis que combinam relacionamento humano com análise de dados — o "CS consultivo"
+`,
+  "Produto & Tecnologia": `
+BENCHMARKS DE MERCADO — PRODUTO & TECNOLOGIA (energytechs, SaaS, fintechs):
+- Requisitos mais comuns para Produto: experiência com discovery, roadmap, métricas de produto (DAU, retention, NPS), metodologias ágeis
+- Requisitos mais comuns para Tech: stack relevante (React, Node, Python), experiência com APIs, testes automatizados, cultura de code review
+- Diferenciais valorizados: experiência em domínios regulados (energia, financeiro), capacidade de traduzir complexidade técnica para stakeholders não-técnicos
+- Senioridade Pleno Dev: 3-5 anos, entrega autônoma de features, participação em decisões de arquitetura
+- Senioridade Sênior Dev: 5-8 anos, referência técnica do time, mentoria de juniores
+- Erros comuns em JDs: lista de tecnologias longa demais como requisito, não deixar claro o tamanho e maturidade do time, não especificar o stack real usado
+- Tendência: empresas de energia estão buscando perfis que entendam tanto o negócio quanto a tecnologia — "product engineers"
+`,
+  "Gente & Gestão": `
+BENCHMARKS DE MERCADO — GENTE & GESTÃO / RH (startups, scale-ups):
+- Requisitos mais comuns: experiência em recrutamento técnico e comportamental, knowledge em People Analytics, capacidade de estruturar processos em ambientes de crescimento rápido
+- Diferenciais valorizados: experiência em empresas de tecnologia ou energia, domínio de ferramentas de ATS (Greenhouse, Lever), background em psicologia ou administração
+- Senioridade Pleno: 2-4 anos, condução autônoma de processos seletivos, apoio em projetos de cultura e engajamento
+- Senioridade Sênior: 4-7 anos, estruturação de processos de People, parceria estratégica com lideranças (HRBP)
+- Erros comuns em JDs: não especificar o volume de vagas esperado, não deixar claro se é generalista ou especialista, requisitos acadêmicos desnecessariamente restritivos
+- Tendência: mercado valoriza profissionais de People que usam dados para embasar decisões e têm visão de negócio
+`,
+  "Financeiro": `
+BENCHMARKS DE MERCADO — FINANCEIRO (energytechs, scale-ups):
+- Requisitos mais comuns: domínio de Excel/Google Sheets avançado, experiência com fechamento contábil, FP&A ou controladoria, conhecimento em regulações do setor
+- Diferenciais valorizados: experiência em empresas de energia ou utilities, familiaridade com CCEE e liquidação financeira do mercado livre, conhecimento em BI (Power BI, Tableau)
+- Senioridade Pleno: 2-4 anos, execução de rotinas financeiras com autonomia, suporte a análises gerenciais
+- Senioridade Sênior: 4-7 anos, estruturação de processos financeiros, interface com auditoria e board
+- Erros comuns em JDs: não especificar se é mais operacional ou analítico, requisitos de formação muito rígidos, não deixar claro o porte financeiro da empresa
+- Tendência: profissionais financeiros em energytechs precisam entender o modelo de negócio de gestão de energia para fazer análises relevantes
+`,
+  "Marketing & Parcerias": `
+BENCHMARKS DE MERCADO — MARKETING & PARCERIAS (B2B, energytechs):
+- Requisitos mais comuns: experiência em marketing B2B, domínio de ferramentas de automação (RD Station, HubSpot), capacidade de análise de métricas (CAC, LTV, MQL)
+- Diferenciais valorizados: experiência em mercados regulados ou técnicos, capacidade de criar conteúdo educativo sobre temas complexos, background em parcerias ou canais
+- Senioridade Pleno: 2-4 anos, execução de campanhas com autonomia, gestão de canais digitais
+- Senioridade Sênior: 4-7 anos, estratégia de geração de demanda, gestão de budget e agências
+- Erros comuns em JDs: confundir marketing B2B com B2C, não especificar o canal principal (inbound, eventos, parcerias), requisitos de design desnecessários para perfis estratégicos
+- Tendência: marketing em energia precisa equilibrar educação do mercado (awareness sobre ACL) com geração de leads qualificados — perfil híbrido de conteúdo + performance
+`,
+};
+
 const GREEN = "00C566";
 const DARK = "1a1a1a";
 const GRAY = "666666";
@@ -72,9 +130,12 @@ Responda APENAS com JSON válido:
 }
 
 function buildKickoffSystem(area, nomeVaga, jd) {
-  return `Você é uma analista sênior de Gente & Gestão da Clarke Energia, conduzindo um kickoff de vaga com o gestor responsável.
+  const benchmark = BENCHMARKS[area] || "";
+  return `Você é uma analista sênior de Gente & Gestão da Clarke Energia, conduzindo um kickoff de vaga com o gestor responsável. Sua missão é garantir que a vaga esteja alinhada com a estratégia da empresa, seja competitiva no mercado e atraia o perfil certo.
 
 ${CLARKE_CONTEXT}
+
+${benchmark}
 
 JOB DESCRIPTION DA VAGA:
 Área: ${area}
@@ -86,18 +147,19 @@ Requisitos: ${jd.requisitos}
 Diferenciais: ${jd.diferenciais}
 
 SUAS RESPONSABILIDADES NO KICKOFF:
-1. Analisar criticamente a JD considerando a estratégia da Clarke 2026
-2. Fazer provocações inteligentes sobre requisitos, responsabilidades e diferenciais
-3. Questionar o que é realmente inegociável versus o que é "seria bom ter"
-4. Apontar possíveis inconsistências ou lacunas
-5. Sugerir ajustes baseados em boas práticas de mercado
+1. Cruzar a JD com os benchmarks de mercado da área e apontar gaps ou inconsistências
+2. Questionar o que é realmente inegociável versus o que é "seria bom ter"
+3. Provocar o gestor sobre requisitos que podem estar eliminando bons candidatos desnecessariamente
+4. Sugerir responsabilidades ou métricas que estejam faltando com base no mercado
+5. Garantir alinhamento com a estratégia e cultura da Clarke 2026
 6. Manter tom consultivo, direto e sem rodeios — jeito Clarke de ser
 
 REGRAS:
-- Faça no máximo 2-3 perguntas ou provocações por mensagem para não sobrecarregar
+- Inicie com uma análise comparativa entre a JD e os benchmarks de mercado, destacando o que está bom e o que merece atenção
+- Faça no máximo 2-3 perguntas ou provocações por mensagem para não sobrecarregar o gestor
 - Seja direta e objetiva, sem enrolação
-- Quando o gestor indicar que está satisfeito, gere a JD final atualizada em JSON com a estrutura: {"final": true, "desafios": "...", "responsabilidades": "...", "senioridade": "...", "requisitos": "...", "diferenciais": "..."}
-- Inicie o kickoff com uma análise geral da vaga e as primeiras provocações`;
+- Quando o gestor indicar que está satisfeito com os ajustes, gere a JD final atualizada em JSON com a estrutura exata: {"final": true, "desafios": "...", "responsabilidades": "...", "senioridade": "...", "requisitos": "...", "diferenciais": "..."}
+- Nunca gere o JSON final sem o gestor ter confirmado que quer encerrar o kickoff`;
 }
 
 async function callAPI(payload) {
