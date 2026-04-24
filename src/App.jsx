@@ -290,15 +290,44 @@ const BENCHMARKS = {
 
 function buildJDPrompt(area, nomeVaga, respostas) {
   const r = (b, p) => respostas[b]?.[p] || "";
-  return `Você é analista de Gente & Gestão da Clarke Energia. Reescreva as respostas abaixo de forma profissional, atrativa e fiel ao conteúdo informado. Tom: humano, direto, sem jargões corporativos, orientado a impacto.
+  return `Você é analista sênior de Gente & Gestão da Clarke Energia. Sua tarefa é transformar as respostas brutas de um gestor em um Job Description completo, descritivo e atrativo para divulgação.
+
+CONTEXTO DA CLARKE:
+A Clarke é uma EnergyTech que empodера empresas no mercado livre de energia. Cultura jovem, consultiva, orientada a dados, com atendimento como principal ativo estratégico.
+
 VAGA: ${nomeVaga} | ÁREA: ${area}
-DESAFIOS: ${r("desafios","d1")} | ${r("desafios","d2")} | ${r("desafios","d3")}
-RESPONSABILIDADES: ${r("responsabilidades","r1")} | ${r("responsabilidades","r2")} | ${r("responsabilidades","r3")}
-SENIORIDADE: ${r("senioridade","s1")} | ${r("senioridade","s2")} | ${r("senioridade","s3")}
-REQUISITOS: ${r("requisitos","req1")} | ${r("requisitos","req2")} | ${r("requisitos","req3")}
-DIFERENCIAIS: ${r("diferenciais","dif1")} | ${r("diferenciais","dif2")} | ${r("diferenciais","dif3")}
-Responda APENAS com JSON válido:
-{"desafios":"texto corrido inspirador","responsabilidades":"- item 1\\n- item 2\\n- item 3\\n- item 4\\n- item 5","senioridade":"Nível — descrição curta","requisitos":"- item 1\\n- item 2\\n- item 3\\n- item 4","diferenciais":"- item 1\\n- item 2\\n- item 3"}`;
+
+RESPOSTAS DO GESTOR:
+Problema/oportunidade central: ${r("desafios","d1")}
+Principais desafios do dia a dia: ${r("desafios","d2")}
+Por que essa vaga é relevante agora: ${r("desafios","d3")}
+Atividades principais: ${r("responsabilidades","r1")}
+Times com quem vai interagir: ${r("responsabilidades","r2")}
+Métricas e resultados esperados: ${r("responsabilidades","r3")}
+Nível: ${r("senioridade","s1")}
+Anos de experiência: ${r("senioridade","s2")}
+Autonomia: ${r("senioridade","s3")}
+Requisitos técnicos inegociáveis: ${r("requisitos","req1")}
+Localização/modelo de trabalho: ${r("requisitos","req2")}
+Formação obrigatória: ${r("requisitos","req3")}
+O que diferencia candidatos: ${r("diferenciais","dif1")}
+Experiência prévia ideal: ${r("diferenciais","dif2")}
+Habilidade comportamental essencial: ${r("diferenciais","dif3")}
+
+INSTRUÇÕES DE ESCRITA:
+
+1. DESAFIOS: Escreva 2 a 3 parágrafos corridos descrevendo os desafios da vaga no contexto da Clarke. Use as respostas do gestor como base, mas enriqueça com a estratégia da empresa (crescimento acelerado, novos produtos, retenção de clientes, tombamento atacadista). O texto deve explicar o momento da Clarke, por que essa vaga existe agora e qual o impacto esperado. Tom descritivo e inspirador, na terceira pessoa. Mínimo 80 palavras.
+
+2. RESPONSABILIDADES: Transforme tudo em lista de tópicos com verbo de ação no infinitivo. Mesmo que o gestor tenha escrito em parágrafo, identifique cada atividade e separe em itens. Inclua as métricas mencionadas como parte dos tópicos. Mínimo 6 itens.
+
+3. SENIORIDADE: Uma frase clara com nível + anos de experiência + perfil de autonomia esperado. Ex: "Pleno — Buscamos alguém com 3 a 5 anos de experiência que consiga atuar com autonomia no dia a dia, tomando iniciativa sem esperar por direcionamento constante."
+
+4. REQUISITOS: Lista de tópicos, um por linha, começando com "- ". Separe cada requisito em item próprio mesmo que o gestor tenha listado vários juntos. Inclua localização/modelo de trabalho e formação como itens separados. Mínimo 5 itens.
+
+5. DIFERENCIAIS: Lista de tópicos, um por linha, começando com "- ". Expanda cada diferencial com uma frase descritiva, não apenas uma palavra. Mínimo 4 itens.
+
+Responda APENAS com JSON válido, sem texto antes ou depois, sem markdown:
+{"desafios":"parágrafo 1\\n\\nparágrafo 2\\n\\nparágrafo 3","responsabilidades":"- item 1\\n- item 2\\n- item 3\\n- item 4\\n- item 5\\n- item 6","senioridade":"Nível — descrição completa","requisitos":"- item 1\\n- item 2\\n- item 3\\n- item 4\\n- item 5","diferenciais":"- item 1\\n- item 2\\n- item 3\\n- item 4"}`;
 }
 
 function buildKickoffSystem(area, nomeVaga, jd) {
